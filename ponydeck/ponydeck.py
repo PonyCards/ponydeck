@@ -18,6 +18,10 @@ def printSection(name, cards):
   ret += '</section>\n'
   return ret
 
+class UnknownCardError(Exception):
+  def __init__(self, card):
+    self.card = card
+
 def gen(url):
   o = urlparse(url)
   d = {v.split("=")[0]:v.split("=")[1] for v in o.query.split("&")}
@@ -33,7 +37,10 @@ def gen(url):
   problems = []
 
   for x in cards:
-    card = octideck[(x[0] + x[1]).lower()]
+    try:
+      card = octideck[x[0] + x[1]]
+    except:
+      raise UnknownCardError(x[0] + x[1])
     count = x[2]
     {'Mane Character' : manes,
      'Friends' : friends,
@@ -68,6 +75,9 @@ def ponydeck(env, start_response):
                ('Content-Disposition', 'attachment; filename="deck.o8d"')]
     start_response(status, headers)
     return [str(ret)]
+  except UnknownCardError as e:
+    start_response('400 Bad Request', [('Content-type', 'text/plain')])
+    return ['Unknown card: ', e.card]
   except:
     traceback.print_exc(20, env['wsgi.errors'])
     start_response('400 Bad Request', [('Content-type', 'text/plain')])
