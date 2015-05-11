@@ -1,4 +1,4 @@
-import cardsjson
+from . import cardsjson
 
 import asyncio
 from urllib.parse import urlparse
@@ -35,7 +35,7 @@ def gen(url):
   code = d.get("v1code")
   if not code:
     return
-  cards = [re.search('([a-zA-Z]+)(n?\d+)x(\d+)', x).groups() for x in code.split("-")]
+  cards = [list(re.search('([a-zA-Z]{2})(F|PF)?(n?\d+)x(\d+)', x).groups()) for x in code.split("-")]
   manes = []
   friends = []
   resources = []
@@ -45,9 +45,9 @@ def gen(url):
 
   for x in cards:
     try:
-      if x[1].startswith('n'):
-        x[1] = '-' + x[1][1:]
-      card = carddb.cardsByAllIDS[x[1] + x[0].upper()]
+      if x[2].startswith('n'):
+        x[2] = '-' + x[2][1:]
+      card = carddb.cardsByAllIDS[(x[1].lower() if x[1] else '') + x[2] + x[0].upper()]
     except:
       raise UnknownCardError(x[0] + x[1])
     count = x[2]
