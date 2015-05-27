@@ -49,8 +49,8 @@ def gen(url):
         x[2] = '-' + x[2][1:]
       card = carddb.cardsByAllIDS[(x[1].lower() if x[1] else '') + x[2] + x[0].upper()]
     except:
-      raise UnknownCardError(x[0] + x[1])
-    count = x[2]
+      raise UnknownCardError(x[0] + x[1] + x[2])
+    count = x[3]
     {'Mane' : manes,
      'Friend' : friends,
      'Resource' : resources,
